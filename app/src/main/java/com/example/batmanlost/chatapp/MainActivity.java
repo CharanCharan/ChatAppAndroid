@@ -1,39 +1,45 @@
 package com.example.batmanlost.chatapp;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.github.nkzawa.socketio.client.IO;
-import com.github.nkzawa.socketio.client.Socket;
-
 import java.net.URISyntaxException;
+
+import io.socket.client.IO;
+import io.socket.client.Socket;
 
 
 public class MainActivity extends AppCompatActivity {
     private  static  final String TAG = "MainActivity" ;
     private Socket mSocket;
-    {
-        try{
-            mSocket = IO.socket("http://192.168.1.6:3000");
-            Log.i(TAG, "Socket connection successful");
-        }
-        catch (URISyntaxException e){
-            Toast.makeText(getApplicationContext(),"Not connected",Toast.LENGTH_LONG).show();
-            Log.i(TAG, "Socket connection failed");
-            throw new RuntimeException();
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        try{
+            Log.i(TAG, "Attempting socket connection");
+            mSocket = IO.socket("http://10.10.11.44:3000/");
+        }
+        catch (URISyntaxException e){
+            Toast.makeText(getApplicationContext(),"Not connected",Toast.LENGTH_LONG).show();
+            Log.i(TAG, "ERROR : Socket connection failed");
+            throw new RuntimeException();
+        }
+
         mSocket.connect();
-        Log.i(TAG, "Attempting socket connection");
+        if(mSocket.connected()){
+            Log.i(TAG, "Socket connection successful");
+        }
+        else{
+            Log.i(TAG, "Socket connection failed");
+        }
+
     }
 
     @Override
